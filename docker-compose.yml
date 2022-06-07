@@ -1,0 +1,36 @@
+version: '3.9'
+services:
+
+  mongo_db:
+    container_name: mongodb-container
+    restart: always
+    image: mongo:latest
+    ports: 
+      - 2717:27017
+    networks:
+      - lib-app
+    volumes:
+      - mongo_db:/data/db
+
+
+  lib-api-server:
+    container_name: lib-api-container
+    build: ./server
+    ports:
+      - 7000:7000
+    environment:
+      PORT: 7000
+      MONGODB_URI: mongodb://mongo_db:27017
+      DB_NAME: library-mgt-docker
+    networks:
+      - lib-app
+    depends_on:
+      - mongo_db
+
+networks:
+  lib-app:
+    driver: bridge
+
+volumes:
+  mongo_db:
+   # driver: local
